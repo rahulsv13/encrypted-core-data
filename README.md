@@ -1,199 +1,191 @@
-# Encrypted Core Data SQLite Store [![Build Status](https://travis-ci.org/RahulSV13/encrypted-core-data.svg?branch=master)](https://travis-ci.org/RahulSV13/encrypted-core-data)[![analytics](http://www.google-analytics.com/collect?v=1&t=pageview&_s=1&dl=https%3A%2F%2Fgithub.com%2FRahulSV13%2Fencrypted-core-data&_u=MAC~&cid=1757014354.1393964045&tid=UA-38868530-1)]()
+# Encrypted Core Data
 
+Encrypted Core Data provides a Core Data store that encrypts all persisted data using SQLCipher. Aside from initial setup, usage is the same as standard Core Data and can replace the default SQLite store in existing projects.
 
-Provides a Core Data store that encrypts all data that is persisted.  Besides the initial setup, the usage is exactly the same as Core Data and can be used in existing projects that use Core Data.
+## Requirements
 
-# Vulnerabilities Addressed
+- **iOS 12+** / **macOS 10.13+**
+- Xcode project with Core Data enabled (or a `.xcdatamodeld` and `NSManagedObjectModel`)
 
-1. SQLite database is not encrypted, contents are in plain text
-  - CWE-311: Missing Encryption of Sensitive Data
-2. SQLite database file protected with 4 digit system passcode
-  - CWE-326: Inadequate Encryption Strength
-  - SRG-APP-000129-MAPP-000029  Severity-CAT II: The mobile application must implement automated mechanisms to enforce access control restrictions which are not provided by the operating system
+## Setup
 
-# Project Setup
-  * When creating the project make sure **Use Core Data** is selected
-  * Switch into your project's root directory and checkout the encrypted-core-data project code
-```
-    cd ~/Documents/code/YourApp
+### Swift Package Manager
 
-    git clone https://github.com/RahulSV13/encrypted-core-data.git
-```
-  * Click on the top level Project item and add files ("option-command-a")
-  * Navigate to **encrypted-core-data**, highlight **Sources/EncryptedCoreData**, and click **Add**
+1. In Xcode: **File → Add Package Dependencies...**
+2. Enter the package URL:  
+   `https://github.com/RahulSV13/encrypted-core-data.git`
+3. Choose **Up to Next Major Version** (or a specific version/tag).
+4. Add the **EncryptedCoreData** library to your app target.
 
-  * SQLCipher is added as a git submodule within ECD. A `git submodule init` and `git submodule update` should populate the sqlcipher submodule directory, where the `sqlcipher.xcodeproj` can be found and added to your project.
-  * To use CommonCrypto with SQLCipher in Xcode:
-    - add the compiler flags `-DSQLCIPHER_CRYPTO_CC` and `-DSQLITE_HAS_CODEC` under the sqlcipher project settings > Build Settings > Custom Compiler Flags > Other C Flags
-    - Under your application's project settings > Build Phases, add `sqlcipher` to Target Dependencies, and `libsqlcipher.a` and `Security.framework` to Link Binary With Libraries.
-    
-* _Note:_ Along with the move to CommonCrypto, we've updated the version of SQLCipher included as a submodule from v2.0.6 to v3.1.0. Databases created with v2.0.6 will not be able to be read directly by v3.1.0, and support for legacy database migration is not yet supported by ECD.
+Or add to your own `Package.swift`:
 
-# Installation via CocoaPod
-* If you don't already have CocoaPods installed, do `$ sudo gem install cocoapods` in your terminal. (See the [CocoaPods website](http://guides.cocoapods.org/using/getting-started.html#getting-started) for details.)
-* In your project directory, do `pod init` to create a Podfile.
-* Add `pod 'EncryptedCoreData', :git => 'https://github.com/RahulSV13/encrypted-core-data.git'` to your Podfile
-* Run `pod install`
-* In your application delegate source file (AppDelegate.m), add `#import "EncryptedStore.h"`
-
-# Installation via Swift Package Manager
-* In Xcode: **File → Add Package Dependencies...** and enter: `https://github.com/RahulSV13/encrypted-core-data.git`
-* Set the dependency rule to **Up to Next Major Version** and use **3.1.0** (do not use branch "master" — it can cause "did not find the new dependency in the package graph").
-* Or add to your `Package.swift`: `.package(url: "https://github.com/RahulSV13/encrypted-core-data.git", from: "3.1.0")`
-* In your app target, add the **EncryptedCoreData** package product.
-* In your source file, add `#import <EncryptedCoreData/EncryptedStore.h>` (or `@import EncryptedCoreData;`)
-
-*Note:* The SPM version depends on [SQLCipher.swift](https://github.com/sqlcipher/SQLCipher.swift) and supports **iOS 12+** and **macOS 10.13+**. For older deployment targets, use CocoaPods. If adding the package fails, try **File → Packages → Reset Package Caches**, then add the package again using version **3.1.0**.
-
-# Using EncryptedStoreFileManager
-In case of strong coupling with file system functions and others default conventions FileManager was introduced.
-
-Have a look at components:
-
-* EncryptedStoreFileManagerConfiguration
-* EncryptedStoreFileManager
-
-Various options are stored in Configuration.
-
-And FileManager could be passed to all functions as an option.
-
-```
-NSDictionary *options = @{ EncryptedStore.optionFileManager : fileManager };
+```swift
+dependencies: [
+    .package(url: "https://github.com/RahulSV13/encrypted-core-data.git", from: "3.1.0"),
+]
 ```
 
-However, it should solve some dirty hacks.
-Let's try.
+Then add `EncryptedCoreData` to your target’s dependencies.
 
-## Database lives in different bundle.
+### Import
 
-```
-NSBundle *bundle = [NSBundle bundleWithIdentifier:"com.opensource.database_framework"];
-EncryptedStoreFileManagerConfiguration *configuration = [EncryptedStoreFileManagerConfiguration new];
-configuration.bundle = bundle;
+**Objective-C:**
 
+```objc
+@import EncryptedCoreData;
 // or
-[[EncryptedStoreFileManagerConfiguration alloc] initWithOptions: @{EncryptedStoreFileManagerConfiguration.optionBundle : bundle}];
-
-// next, you need to bypassing configuration to setup store.
-EncryptedStoreFileManager *fileManager = [[EncryptedStoreFileManager alloc] initWithConfiguration:configuration];
-NSDictionary *options = @{ EncryptedStore.optionFileManager : fileManager };
+#import <EncryptedCoreData/EncryptedStore.h>
 ```
 
-## Complex setup and file system methods separation.
+**Swift:**
 
-By default, database file (sqlite) is stored on disk in Application Support Directory.
-But you can configure file extension, file name and file url in `EncryptedStoreFileManagerConfiguration`.
-
-## Apply attributes to database file.
-In general, this functionality is not needed.
-It is a part of setup core data stack process.
-
-## Configure persistentContainer
-`NSPersistentContainer` uses NSPersistentStoreDescriptions to configure stores.
-
+```swift
+import EncryptedCoreData
 ```
-NSManagedObjectModel *model = [NSManagedObjectModel new];
-NSPersistentContainer *container = [[NSPersistentContainer alloc] initWithName:@"abc" managedObjectModel:model];
+
+---
+
+## Configuration
+
+### Option keys
+
+Use these keys in the options dictionary when creating the store:
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `EncryptedStorePassphraseKey` / `EncryptedStore.optionPassphraseKey` | `NSString` | **Required.** Passphrase used to encrypt/decrypt the database. |
+| `EncryptedStoreDatabaseLocation` / `EncryptedStore.optionDatabaseLocation` | `NSURL` | Custom database file URL. Default: Application Support directory. |
+| `EncryptedStoreCacheSize` / `EncryptedStore.optionCacheSize` | `NSNumber` | Custom SQLite cache size. |
+| `EncryptedStore.optionFileManager` | `EncryptedStoreFileManager` | Custom file manager (e.g. for different bundle or paths). |
+| `EncryptedStore.optionModelURL` | `NSURL` | URL for the Core Data model (`.momd`). |
+| `EncryptedStore.optionDatabaseLocation` | `NSURL` | Override database file URL. |
+
+### Basic setup (coordinator only)
+
+Replace your existing persistent store coordinator setup with an encrypted store:
+
+```objc
+// Simple: model + passphrase
+NSPersistentStoreCoordinator *coordinator = [EncryptedStore makeStore:[self managedObjectModel] passcode:@"YOUR_PASSCODE"];
+
+// With options
 NSDictionary *options = @{
-                          self.optionPassphraseKey : @"123",
-                          self.optionFileManager : [EncryptedStoreFileManager defaultManager]
+    EncryptedStorePassphraseKey: @"YOUR_PASSCODE",
+    EncryptedStoreCacheSize: @(5000),                    // optional
+    EncryptedStoreDatabaseLocation: [self customDBURL]   // optional
 };
-NSPersistentStoreDescription *description = [self makeDescriptionWithOptions:options configuration:nil error:nil];
+NSPersistentStoreCoordinator *coordinator = [EncryptedStore makeStoreWithOptions:options
+                                                              managedObjectModel:[self managedObjectModel]];
+```
+
+Use `makeStoreWithOptions:managedObjectModel:error:` if you need an `NSError **` for failure handling.
+
+### Setup with NSPersistentContainer (recommended)
+
+Use `NSPersistentStoreDescription` so the container loads an `EncryptedStore`:
+
+```objc
+NSManagedObjectModel *model = [NSManagedObjectModel mergedModelFromBundles:@[NSBundle.mainBundle]];
+NSPersistentContainer *container = [[NSPersistentContainer alloc] initWithName:@"YourModelName" managedObjectModel:model];
+
+NSDictionary *options = @{
+    EncryptedStore.optionPassphraseKey : @"YOUR_PASSCODE",
+    EncryptedStore.optionFileManager  : [EncryptedStoreFileManager defaultManager]  // optional
+};
+
+NSError *error = nil;
+NSPersistentStoreDescription *description = [EncryptedStore makeDescriptionWithOptions:options
+                                                                         configuration:nil
+                                                                                 error:&error];
+if (!description) {
+    // handle error
+    return;
+}
 
 container.persistentStoreDescriptions = @[description];
 
-[container loadPersistentStoresWithCompletionHandler:^(NSPersistentStoreDescription *description, NSError * error) {
-    if (error) {
-        NSLog(@"error! %@", error);
+[container loadPersistentStoresWithCompletionHandler:^(NSPersistentStoreDescription *desc, NSError *err) {
+    if (err) {
+        NSLog(@"Encrypted store load error: %@", err);
+        return;
     }
+    // use container.viewContext, etc.
 }];
 ```
 
-But if you wish:
+### Optional: custom database location / bundle (EncryptedStoreFileManager)
 
+To put the database in a specific bundle or control the file path:
+
+```objc
+EncryptedStoreFileManagerConfiguration *config = [EncryptedStoreFileManagerConfiguration new];
+config.bundle = [NSBundle bundleWithIdentifier:@"com.example.database"];  // optional
+config.databaseName = @"MyApp";           // optional, default derived from model
+config.databaseExtension = @"sqlite";     // optional
+// config.databaseURL = customURL;        // or set full URL
+
+EncryptedStoreFileManager *fileManager = [[EncryptedStoreFileManager alloc] initWithConfiguration:config];
+
+NSDictionary *options = @{
+    EncryptedStore.optionPassphraseKey : @"YOUR_PASSCODE",
+    EncryptedStore.optionFileManager   : fileManager
+};
 ```
-EncryptedStore *store = // retrieve store from coordinator.
 
-// set database file attributes
-NSDictionary *attributes = // set attributes
+Then pass `options` into `makeStoreWithOptions:managedObjectModel:error:` or `makeDescriptionWithOptions:configuration:error:` as in the examples above.
+
+### Changing the passphrase
+
+After the store is loaded, you can change the passphrase (e.g. after user re-authentication):
+
+```objc
+EncryptedStore *store = (EncryptedStore *)coordinator.persistentStores.firstObject;
 NSError *error = nil;
-[store.fileManager setAttributes:attributes ofItemAtURL:store.fileManager.databaseURL error:&error];
-
-// inspect bundle
-store.fileManager.configuration.bundle;
+BOOL ok = [store checkAndChangeDatabasePassphrase:@"OLD_PASS" toNewPassphrase:@"NEW_PASS" error:&error];
 ```
 
+---
 
-# Using EncryptedStore
+## Using EncryptedStore
 
-EncryptedStore is known to work successfully on iOS versions 6.0 through 9.2.
+Use your `NSPersistentStoreCoordinator` or `NSPersistentContainer` as usual: create contexts, fetch requests, save. EncryptedStore is a drop-in replacement for `NSSQLiteStoreType`; only the setup differs.
 
-If you wish to set a custom cache size and/or custom database URL:
-create an NSDictionary to set the options for your EncryptedStore, replacing customPasscode, customCacheSize, and/or customDatabaseURL:
-```objc
-NSDictionary *options = @{ EncryptedStorePassphraseKey: (NSString *) customPasscode,
-                           EncryptedStoreCacheSize: (NSNumber *) customCacheSize,
-                           EncryptedStoreDatabaseLocation: (NSURL *) customDatabaseURL
-                           };
-```
+**Debugging:** Add the launch argument `-com.apple.CoreData.SQLDebug 1` to log SQL statements (for development only).
 
-In your application delegate source file (i.e. AppDelegate.m) you should see
-```objc
-NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
-```
-If you created an NSDictionary with custom options, replace that line with
-```objc
-NSPersistentStoreCoordinator *coordinator = [EncryptedStore makeStoreWithOptions:options managedObjectModel:[self managedObjectModel]];
-```
+---
 
-Otherwise, replace that line with:
-```objc
-NSPersistentStoreCoordinator *coordinator = [EncryptedStore makeStore:[self managedObjectModel]:@"SOME_PASSCODE"];
-```
-making sure to replace "SOME_PASSCODE" with a passcode of your own.
+## Security notes
 
-Also in the same file add an import for EncryptedStore.h:
-```objc
-   #import "EncryptedStore.h"
-```
+- **Plain SQLite** keeps data in plain text (CWE-311: Missing Encryption of Sensitive Data).
+- **Weak protection** (e.g. 4-digit passcode only) is inadequate (CWE-326, SRG-APP-000129). Use a strong passphrase and secure storage (e.g. Keychain) for the passphrase in production.
 
-If there are issues you can add `-com.apple.CoreData.SQLDebug 1` to see all statements encryted-cored-data generates be logged.
+---
 
-# Features
+## Features
 
-- One-to-one relationships
-- One-to-many relationships
-- Many-to-Many relationships (NEW)
-- Predicates
-- Inherited entities
+- One-to-one, one-to-many, and many-to-many relationships
+- Predicates and inherited entities
+- Same Core Data API as the default SQLite store
 
-Missing features and known bugs are maintained on the [issue tracker](https://github.com/RahulSV13/encrypted-core-data/issues?state=open)
+Known issues and feature requests: [issue tracker](https://github.com/RahulSV13/encrypted-core-data/issues).
 
-# Diagram
+---
 
-Below is a diagram showing the differences between NSSQLiteStore and EncryptedStore.  Note that actual the SQLite calls are coupled fairly strongly with the layer wrapping it:
-<img src="diagram.jpg" />
+## Diagram
 
+Comparison between `NSSQLiteStore` and EncryptedStore:
 
-# Strings Comparison
+![Architecture](diagram.jpg)
 
-Below is the output of doing the unix *strings* command on a sample applications .sqlite file.  As you can see, the default persistence store leaves all information in plaintext:
-<img src="stringOutput.jpg" />
+## Strings comparison
 
+Default Core Data SQLite leaves data in plain text; EncryptedStore encrypts the file:
+
+![Strings output](stringOutput.jpg)
+
+---
 
 ## License
 
-Copyright 2012 - 2014 The MITRE Corporation, All Rights Reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this work except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+Copyright 2012–2014 The MITRE Corporation. Licensed under the Apache License, Version 2.0.  
+See the [LICENSE](LICENSE) file for details.
