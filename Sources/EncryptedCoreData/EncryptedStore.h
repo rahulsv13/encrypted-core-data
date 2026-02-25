@@ -4,7 +4,7 @@
 // Copyright 2012 - 2014 The MITRE Corporation, All Rights Reserved.
 //
 //
-
+#import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
 typedef struct _options {
