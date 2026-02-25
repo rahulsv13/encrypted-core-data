@@ -20,7 +20,7 @@ Provides a Core Data store that encrypts all data that is persisted.  Besides th
     git clone https://github.com/RahulSV13/encrypted-core-data.git
 ```
   * Click on the top level Project item and add files ("option-command-a")
-  * Navigate to **encrypted-core-data**, highlight **Incremental Store**, and click **Add**
+  * Navigate to **encrypted-core-data**, highlight **Sources/EncryptedCoreData**, and click **Add**
 
   * SQLCipher is added as a git submodule within ECD. A `git submodule init` and `git submodule update` should populate the sqlcipher submodule directory, where the `sqlcipher.xcodeproj` can be found and added to your project.
   * To use CommonCrypto with SQLCipher in Xcode:
@@ -37,12 +37,13 @@ Provides a Core Data store that encrypts all data that is persisted.  Besides th
 * In your application delegate source file (AppDelegate.m), add `#import "EncryptedStore.h"`
 
 # Installation via Swift Package Manager
-* In Xcode: **File → Add Package Dependencies...** and enter the repository URL: `https://github.com/RahulSV13/encrypted-core-data.git`
-* Or add to your `Package.swift` dependencies: `.package(url: "https://github.com/RahulSV13/encrypted-core-data.git", from: "3.1.0")`
+* In Xcode: **File → Add Package Dependencies...** and enter: `https://github.com/RahulSV13/encrypted-core-data.git`
+* Set the dependency rule to **Up to Next Major Version** and use **3.1.0** (do not use branch "master" — it can cause "did not find the new dependency in the package graph").
+* Or add to your `Package.swift`: `.package(url: "https://github.com/RahulSV13/encrypted-core-data.git", from: "3.1.0")`
 * In your app target, add the **EncryptedCoreData** package product.
 * In your source file, add `#import <EncryptedCoreData/EncryptedStore.h>` (or `@import EncryptedCoreData;`)
 
-*Note:* The SPM version depends on [SQLCipher.swift](https://github.com/sqlcipher/SQLCipher.swift) and supports **iOS 12+** and **macOS 10.13+**. For older deployment targets, use CocoaPods.
+*Note:* The SPM version depends on [SQLCipher.swift](https://github.com/sqlcipher/SQLCipher.swift) and supports **iOS 12+** and **macOS 10.13+**. For older deployment targets, use CocoaPods. If adding the package fails, try **File → Packages → Reset Package Caches**, then add the package again using version **3.1.0**.
 
 # Using EncryptedStoreFileManager
 In case of strong coupling with file system functions and others default conventions FileManager was introduced.

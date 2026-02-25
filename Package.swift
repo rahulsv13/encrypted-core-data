@@ -21,7 +21,7 @@ let package = Package(
         .target(
             name: "EncryptedCoreData",
             dependencies: [.product(name: "SQLCipher", package: "SQLCipher.swift")],
-            path: "Incremental Store",
+            path: "Sources/EncryptedCoreData",
             exclude: [],
             publicHeadersPath: ".",
             cSettings: [

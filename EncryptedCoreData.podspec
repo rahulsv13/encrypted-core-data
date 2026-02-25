@@ -19,8 +19,8 @@ Pod::Spec.new do |s|
 
     s.ios.deployment_target = '8.0'
     s.osx.deployment_target = '10.10'
-    s.source_files  = 'Incremental Store/**/*.{h,m}'
-    s.public_header_files   = 'Incremental Store/EncryptedStore.h'
+    s.source_files  = 'Sources/EncryptedCoreData/**/*.{h,m}'
+    s.public_header_files   = 'Sources/EncryptedCoreData/EncryptedStore.h'
   
     s.dependency 'SQLCipher', '~> 3.4.0'
   

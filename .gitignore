@@ -14,5 +14,9 @@ xcuserdata
 profile
 *.moved-aside
 
+# Swift Package Manager
+.build/
+Package.resolved
+
 # Finder
 .DS_Store

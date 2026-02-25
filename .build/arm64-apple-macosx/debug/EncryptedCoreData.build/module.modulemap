@@ -1,4 +1,0 @@
-module EncryptedCoreData {
-    umbrella "/Users/rahulvengurlekar/Documents/Projects/Encrypted-Core-Data/encrypted-core-data/Incremental Store"
-    export *
-}
