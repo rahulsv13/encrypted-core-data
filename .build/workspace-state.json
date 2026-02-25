@@ -1,0 +1,49 @@
+{
+  "object" : {
+    "artifacts" : [
+      {
+        "kind" : {
+          "xcframework" : {
+
+          }
+        },
+        "packageRef" : {
+          "identity" : "sqlcipher.swift",
+          "kind" : "remoteSourceControl",
+          "location" : "https://github.com/sqlcipher/SQLCipher.swift.git",
+          "name" : "SQLCipher"
+        },
+        "path" : "/Users/rahulvengurlekar/Documents/Projects/Encrypted-Core-Data/encrypted-core-data/.build/artifacts/sqlcipher.swift/SQLCipher/SQLCipher.xcframework",
+        "source" : {
+          "checksum" : "05898c5baf0bb8fdb982da68201feb571ce601ad3af67ea9f712c99842cf701b",
+          "type" : "remote",
+          "url" : "https://github.com/sqlcipher/SQLCipher.swift/releases/download/4.13.0/SQLCipher.xcframework.zip"
+        },
+        "targetName" : "SQLCipher"
+      }
+    ],
+    "dependencies" : [
+      {
+        "basedOn" : null,
+        "packageRef" : {
+          "identity" : "sqlcipher.swift",
+          "kind" : "remoteSourceControl",
+          "location" : "https://github.com/sqlcipher/SQLCipher.swift.git",
+          "name" : "SQLCipher"
+        },
+        "state" : {
+          "checkoutState" : {
+            "revision" : "7da3c29da67ef5f6dac915647087d966451f00d3",
+            "version" : "4.13.0"
+          },
+          "name" : "sourceControlCheckout"
+        },
+        "subpath" : "SQLCipher.swift"
+      }
+    ],
+    "prebuilts" : [
+
+    ]
+  },
+  "version" : 7
+}

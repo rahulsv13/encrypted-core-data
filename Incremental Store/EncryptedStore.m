@@ -8,7 +8,11 @@
 #error This class requires ARC.
 #endif
 
+#if __has_include(<SQLCipher/sqlite3.h>)
+#import <SQLCipher/sqlite3.h>
+#else
 #import "sqlite3.h"
+#endif
 #import <objc/runtime.h>
 #import <Foundation/Foundation.h>
 #import "EncryptedStore.h"

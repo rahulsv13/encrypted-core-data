@@ -1,4 +1,4 @@
-# Encrypted Core Data SQLite Store [![Build Status](https://travis-ci.org/project-imas/encrypted-core-data.svg?branch=master)](https://travis-ci.org/project-imas/encrypted-core-data)[![analytics](http://www.google-analytics.com/collect?v=1&t=pageview&_s=1&dl=https%3A%2F%2Fgithub.com%2Fproject-imas%2Fencrypted-core-data&_u=MAC~&cid=1757014354.1393964045&tid=UA-38868530-1)]()
+# Encrypted Core Data SQLite Store [![Build Status](https://travis-ci.org/RahulSV13/encrypted-core-data.svg?branch=master)](https://travis-ci.org/RahulSV13/encrypted-core-data)[![analytics](http://www.google-analytics.com/collect?v=1&t=pageview&_s=1&dl=https%3A%2F%2Fgithub.com%2FRahulSV13%2Fencrypted-core-data&_u=MAC~&cid=1757014354.1393964045&tid=UA-38868530-1)]()
 
 
 Provides a Core Data store that encrypts all data that is persisted.  Besides the initial setup, the usage is exactly the same as Core Data and can be used in existing projects that use Core Data.
@@ -17,7 +17,7 @@ Provides a Core Data store that encrypts all data that is persisted.  Besides th
 ```
     cd ~/Documents/code/YourApp
 
-    git clone https://github.com/project-imas/encrypted-core-data.git
+    git clone https://github.com/RahulSV13/encrypted-core-data.git
 ```
   * Click on the top level Project item and add files ("option-command-a")
   * Navigate to **encrypted-core-data**, highlight **Incremental Store**, and click **Add**
@@ -32,9 +32,17 @@ Provides a Core Data store that encrypts all data that is persisted.  Besides th
 # Installation via CocoaPod
 * If you don't already have CocoaPods installed, do `$ sudo gem install cocoapods` in your terminal. (See the [CocoaPods website](http://guides.cocoapods.org/using/getting-started.html#getting-started) for details.)
 * In your project directory, do `pod init` to create a Podfile.
-* Add `pod 'EncryptedCoreData', :git => 'https://github.com/project-imas/encrypted-core-data.git'` to your Podfile
+* Add `pod 'EncryptedCoreData', :git => 'https://github.com/RahulSV13/encrypted-core-data.git'` to your Podfile
 * Run `pod install`
 * In your application delegate source file (AppDelegate.m), add `#import "EncryptedStore.h"`
+
+# Installation via Swift Package Manager
+* In Xcode: **File → Add Package Dependencies...** and enter the repository URL: `https://github.com/RahulSV13/encrypted-core-data.git`
+* Or add to your `Package.swift` dependencies: `.package(url: "https://github.com/RahulSV13/encrypted-core-data.git", from: "3.1.0")`
+* In your app target, add the **EncryptedCoreData** package product.
+* In your source file, add `#import <EncryptedCoreData/EncryptedStore.h>` (or `@import EncryptedCoreData;`)
+
+*Note:* The SPM version depends on [SQLCipher.swift](https://github.com/sqlcipher/SQLCipher.swift) and supports **iOS 12+** and **macOS 10.13+**. For older deployment targets, use CocoaPods.
 
 # Using EncryptedStoreFileManager
 In case of strong coupling with file system functions and others default conventions FileManager was introduced.
@@ -158,7 +166,7 @@ If there are issues you can add `-com.apple.CoreData.SQLDebug 1` to see all stat
 - Predicates
 - Inherited entities
 
-Missing features and known bugs are maintained on the [issue tracker](https://github.com/project-imas/encrypted-core-data/issues?state=open)
+Missing features and known bugs are maintained on the [issue tracker](https://github.com/RahulSV13/encrypted-core-data/issues?state=open)
 
 # Diagram
 
